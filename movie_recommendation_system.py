@@ -9,6 +9,7 @@ import pickle
 # Load datasets
 moviesdf = pd.read_csv('Movielens dataset/movies.csv')
 ratingsdf = pd.read_csv('Movielens dataset/ratings.csv')
+linksdf=pd.read_csv('Movielens dataset/links.csv')
 reader = Reader(rating_scale=(1, 5))
 
 data = Dataset.load_from_df(ratingsdf[['userId', 'movieId', 'rating']], reader)
@@ -42,10 +43,11 @@ data = fetch_poster(112)
 # Notify the reader that the data was successfully loaded.
 data_load_state.text('Loading data...done!')
 
-st.write(data)
+# merge the moviesdf and linksdf to get tmdbid
+final_moviedf=moviesdf.merge(linksdf, on='movieId')
 
 # code for mapping the movie id to get movie title
-movie_mapping = dict(zip(moviesdf['movieId'].astype(str), moviesdf['title']))
+movie_mapping = dict(zip(final_moviedf['movieId'].astype(str), final_moviedf['tmdbId']))
 
 # function to recommend movies using collaborative filtering
 def recommend_movies(model, no_movies, user_id, all_items, movie_mapping):
@@ -66,16 +68,24 @@ def recommend_movies(model, no_movies, user_id, all_items, movie_mapping):
 
     movie_titles = []
     predicted_ratings = []
+    tmdbIDs=[]
+    posters=[]
 
     for recommendation in top_n_recommendations:
         item_id = str(recommendation.iid)
         movie_title = movie_mapping.get(item_id, 'Unknown Movie')
-        movie_titles.append(movie_title)
-        predicted_ratings.append(recommendation.est)
-        print(
-            f"User:{recommendation.uid}  Movie ID:{item_id}  Movie Title: {movie_title}   Predicted rating: {recommendation.est}")
+        TMDBID=movie_mapping.get(item_id, 'Unknown ID')
 
-    return movie_titles, predicted_ratings
+        # get movie details
+        movies=movie.details(TMDBID)
+
+
+        movie_titles.append(movies.title)
+        predicted_ratings.append(recommendation.est)
+        tmdbIDs.append(TMDBID)
+        posters.append(fetch_poster(TMDBID))
+
+    return movie_titles, predicted_ratings, tmdbIDs, posters
 
 st.title('Movie Recommendation System')
 
@@ -83,6 +93,38 @@ st.title('Movie Recommendation System')
 user_id = st.sidebar.number_input('Enter User ID', min_value=1, max_value=1000, value=1)
 
 if st.button("Show recommendation"):
-    movie, predicted_ratings = recommend_movies(model=loaded_model, no_movies=10, user_id=user_id,
+    movie_title, predicted_ratings, tmdbIDs, posters = recommend_movies(model=loaded_model, no_movies=10, user_id=user_id,
                                                 all_items=all_items, movie_mapping=movie_mapping)
-    st.write(movie)
+    col1, col2, col3, col4, col5=st.columns(5)
+    col6, col7, col8, col9, col10=st.columns(5)
+    with st.container():
+        col1.image(posters[0])
+        col1.text(movie_title[0])
+
+        col2.image(posters[1])
+        col2.text(movie_title[1])
+
+        col3.image(posters[2])
+        col3.text(movie_title[2])
+
+        col4.image(posters[3])
+        col4.text(movie_title[3])
+
+        col5.image(posters[4])
+        col5.text(movie_title[4])
+
+    with st.container():
+        col6.image(posters[5])
+        col6.text(movie_title[5])
+
+        col7.image(posters[6])
+        col7.text(movie_title[6])
+
+        col8.image(posters[7])
+        col8.text(movie_title[7])
+
+        col9.image(posters[8])
+        col9.text(movie_title[8])
+
+        col10.image(posters[9])
+        col10.text(movie_title[9])
