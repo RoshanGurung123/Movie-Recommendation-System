@@ -6,6 +6,9 @@ from surprise import dump
 from surprise import SVD, Reader, Dataset
 from surprise.model_selection import train_test_split
 import pickle
+import LoadData
+
+
 # Load datasets
 moviesdf = pd.read_csv('Movielens dataset/movies.csv')
 ratingsdf = pd.read_csv('Movielens dataset/ratings.csv')
@@ -89,42 +92,26 @@ def recommend_movies(model, no_movies, user_id, all_items, movie_mapping):
 
 st.title('Movie Recommendation System')
 
-# Sidebar for user input
-user_id = st.sidebar.number_input('Enter User ID', min_value=1, max_value=1000, value=1)
+# create a user input to input user id
+user_id = st.number_input('Enter User ID', min_value=1, max_value=1000, value=1)
+
+# creating a sidebar menu
+new_user=st.sidebar.selectbox("New user")
+
+number_movies=st.slider('Choose the number of movies to recommend',0,20)
 
 if st.button("Show recommendation"):
-    movie_title, predicted_ratings, tmdbIDs, posters = recommend_movies(model=loaded_model, no_movies=10, user_id=user_id,
+    movie_title, predicted_ratings, tmdbIDs, posters = recommend_movies(model=loaded_model, no_movies=number_movies, user_id=user_id,
                                                 all_items=all_items, movie_mapping=movie_mapping)
-    col1, col2, col3, col4, col5=st.columns(5)
-    col6, col7, col8, col9, col10=st.columns(5)
-    with st.container():
-        col1.image(posters[0])
-        col1.text(movie_title[0])
+    num_cols = 5  # Number of columns to display the movies
+    num_rows = (number_movies + num_cols - 1) // num_cols  # Calculate the number of rows
 
-        col2.image(posters[1])
-        col2.text(movie_title[1])
-
-        col3.image(posters[2])
-        col3.text(movie_title[2])
-
-        col4.image(posters[3])
-        col4.text(movie_title[3])
-
-        col5.image(posters[4])
-        col5.text(movie_title[4])
-
-    with st.container():
-        col6.image(posters[5])
-        col6.text(movie_title[5])
-
-        col7.image(posters[6])
-        col7.text(movie_title[6])
-
-        col8.image(posters[7])
-        col8.text(movie_title[7])
-
-        col9.image(posters[8])
-        col9.text(movie_title[8])
-
-        col10.image(posters[9])
-        col10.text(movie_title[9])
+    # Create a layout with dynamic columns and rows
+    for row in range(num_rows):
+        cols = st.columns(num_cols)
+        with st.container():
+            for col in range(num_cols):
+                index = row * num_cols + col
+                if index < number_movies:
+                    cols[col].image(posters[index])
+                    cols[col].text(movie_title[index])
