@@ -26,7 +26,9 @@ class MovieLens:
     def merge_data(self):
         final_moviedf=self.moviesdf.merge(self.linksdf, on='movieId')
         movie_mapping=dict(zip(final_moviedf['movieId'].astype(str), final_moviedf['tmdbId']))
-        return movie_mapping
+        # Extract the names of all movies
+        all_movie_names = final_moviedf['title'].tolist()
+        return movie_mapping, all_movie_names
 
     # Function to fetch poster
     def fetch_poster (self, movie_id):
