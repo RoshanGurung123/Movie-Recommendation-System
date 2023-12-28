@@ -5,7 +5,7 @@ from CFUserBasedExecute import UserBasedCF
 import pandas as pd
 
 class RecommendMovies:
-    def content_based_recommendation (ratingsdf,movie_mapping, number_movies):
+    def content_based_recommendation (ratingsdf,movie_mapping, number_movies=20):
         movie = Movie()
 
         # Create an instance of the MovieLens class
