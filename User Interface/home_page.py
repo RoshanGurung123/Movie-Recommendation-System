@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fb81b1c4629246d94ac5c2477e2ea570423661f9f3a8d05b2b1ad6a7b4209953
-size 356
+import streamlit as st
+
+def app ():
+    st.title("Welcome to the Movie Recommendation System")
+    st.write("To receive personalized movie recommendations, choose an option from the sidebar:")
+
+    st.markdown("- If you are a new user, select 'New User' :new:")
+    st.markdown("- If you are an existing user, select 'Existing User' :bust_in_silhouette:")
