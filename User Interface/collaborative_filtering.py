@@ -4,7 +4,7 @@ import pandas as pd
 
 class CollaborativeFilteringModel:
     # declare file path for saved model
-    file_path = '../final_model_svd.pkl'
+    file_path = '../Trained model/final_model_svd.pkl'
 
     # function to execute user-based Collaborative Filtering
     def load_model (self):
