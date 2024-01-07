@@ -11,7 +11,6 @@ class ContentBasedRecommender:
     movie=Movie()
 
     ml=MovieLens()
-    sim=pickle.load(open('../Trained model/similarity_cosine.pkl', 'rb'))
 
     def __init__ (self, movies, ratings):
         self.movies = movies
